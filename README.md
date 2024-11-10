@@ -16,7 +16,7 @@
    - Создать два текстовых файла: "Pets" (Домашние животные) и "Pack animals" (Вьючные животные), используя команду `cat` в терминале Linux. В первом файле перечислить собак, кошек и хомяков. Во втором — лошадей, верблюдов и ослов.
 
 ```
-cat > Pets.txt 
+~$ cat > Pets.txt 
 собака
 кошка
 хомяк
@@ -24,7 +24,7 @@ cat > Pets.txt
 кролик
 канарейка
 
-helga@helga-linux:~$ cat > 'Pack animals.txt'
+~$ cat > 'Pack animals.txt'
 лошадь
 верблюд
 осел
@@ -36,8 +36,8 @@ helga@helga-linux:~$ cat > 'Pack animals.txt'
 
    - Объединить содержимое этих двух файлов в один и просмотреть его содержимое.
    ```
-   helga@helga-linux:~$ cat Pets.txt 'Pack animals.txt' > Animals.txt
-helga@helga-linux:~$ cat Animals.txt
+   ~$ cat Pets.txt 'Pack animals.txt' > Animals.txt
+~$ cat Animals.txt
 собака
 кошка
 хомяк
@@ -57,7 +57,7 @@ helga@helga-linux:~$ cat Animals.txt
 `Desktop Documents Downloads  HumanFriends.txt  Music  PackAnimals.txt  Pets.txt  Pictures  Videos`
 
 ```
-helga@helga-linux:~$ mv Animals.txt 'Human Friends.txt'
+~$ mv Animals.txt 'Human Friends.txt'
 ```
 
 ![HumanFriends](image/HumanFriends.png)

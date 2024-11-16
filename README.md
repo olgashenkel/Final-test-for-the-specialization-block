@@ -40,7 +40,7 @@
 
 ### Объектно-ориентированное программирование
 
-6. **Диаграмма классов ([ссылка на работу](https://github.com/olgashenkel/Final-test-for-the-specialization-block/blob/main/OOP_MySQL.md))**
+6. **Диаграмма классов ([ссылка на работу](https://github.com/olgashenkel/Final-test-for-the-specialization-block/blob/main/Class_diagram.md))**
 
 - Создать диаграмму классов с родительским классом "Животные" и двумя подклассами "Pets" и "Pack animals".
 - В составы классов которых в случае Pets войдут классы: собаки, кошки, хомяки, а в класс Pack animals войдут: Лошади, верблюды и ослы.

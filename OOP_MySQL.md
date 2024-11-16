@@ -26,19 +26,19 @@ USE Human_Friends;
 
 DROP TABLE IF EXISTS Type_Pets;
 CREATE TABLE Type_Pets(
-	id_type_pet INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_type_pet INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     type_name VARCHAR(45)
 );
 
 DROP TABLE IF EXISTS Commands_Pets;
 CREATE TABLE Commands_Pets(
-	id_command_pet INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_command_pet INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     command_name VARCHAR(45)
 );
 
 DROP TABLE IF EXISTS Pets;
 CREATE TABLE Pets(
-	id_pet INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_pet INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     pet_name VARCHAR(45),
     id_type_pet INT NOT NULL,
     birthDate DATE NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE Pets(
 
 DROP TABLE IF EXISTS PetsAndComands;
 CREATE TABLE PetsAndComands(
-	id_pet INT NOT NULL,
+    id_pet INT NOT NULL,
     id_command_pet INT NOT NULL,
     PRIMARY KEY (id_pet, id_command_pet), 
     FOREIGN KEY (id_pet) REFERENCES Pets(id_pet),
@@ -59,26 +59,26 @@ CREATE TABLE PetsAndComands(
 
 DROP TABLE IF EXISTS Type_Pack;
 CREATE TABLE Type_Pack(
-	id_type_pack INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_type_pack INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     type_name VARCHAR(45)
 );
 
 DROP TABLE IF EXISTS Commands_Pack;
 CREATE TABLE Commands_Pack(
-	id_command_pack INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_command_pack INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     command_name VARCHAR(45)
 );
 
 DROP TABLE IF EXISTS PackAndComands;
 CREATE TABLE PackAndComands(
-	id_packs INT NOT NULL,
+    id_packs INT NOT NULL,
     id_commands_packs INT NOT NULL,
     PRIMARY KEY (id_packs, id_commands_packs)
 );
 
 DROP TABLE IF EXISTS Pack_Animals;
 CREATE TABLE Pack_Animals(
-	id_pack INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_pack INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     pack_name VARCHAR(45),
     id_type_pack INT,
     birthDate DATE,
@@ -87,7 +87,6 @@ CREATE TABLE Pack_Animals(
 ```
 
 ```
-
 /*
 ***********************************************************************
 Заполнить таблицы данными о животных, их командах и датами рождения.
@@ -129,17 +128,22 @@ VALUES
 (7, 10), (7, 12), (7, 8), 
 (8, 5), (8, 9), (8, 4);
 
-SELECT 
-	p.id_pet,
-    p.pet_name AS 'name',
-    tp.type_name AS 'type',
-    p.birthDate AS birthDate,
-    GROUP_CONCAT(cp.command_name SEPARATOR ', ') AS commands
-FROM Pets AS p
-LEFT JOIN PetsAndComands AS pc ON pc.id_pet=p.id_pet
-LEFT JOIN Type_Pets AS tp ON tp.id_type_pet=p.id_type_pet
-LEFT JOIN Commands_Pets AS cp ON cp.id_command_pet=pc.id_command_pet
-GROUP BY p.id_pet;
+DROP VIEW IF EXISTS view_Pets;
+CREATE VIEW view_Pets AS
+    SELECT 
+        p.id_pet,
+        p.pet_name AS 'name',
+        tp.type_name AS 'type',
+        p.birthDate AS birthDate,
+        GROUP_CONCAT(cp.command_name SEPARATOR ', ') AS commands
+    FROM Pets AS p
+    LEFT JOIN PetsAndComands AS pc ON pc.id_pet=p.id_pet
+    LEFT JOIN Type_Pets AS tp ON tp.id_type_pet=p.id_type_pet
+    LEFT JOIN Commands_Pets AS cp ON cp.id_command_pet=pc.id_command_pet
+    GROUP BY p.id_pet
+    ORDER BY tp.type_name, p.pet_name;
+
+SELECT * FROM view_Pets;
 ```
 ![Заполнение таблиц для типа животных "Pets"](image/MySQL/1.png)
 
@@ -180,8 +184,12 @@ VALUES
 (7, 10), (7, 6), (7, 5), 
 (8, 11), (8, 8);
 
+
+DROP VIEW IF EXISTS view_Pack_Animals;
+
+CREATE VIEW view_Pack_Animals AS
 SELECT 
-	p.id_pack,
+    p.id_pack,
     p.pack_name AS 'name',
     tp.type_name AS 'type',
     p.birthDate AS birthDate,
@@ -190,7 +198,78 @@ FROM Pack_Animals AS p
 LEFT JOIN PackAndComands AS pc ON pc.id_pack=p.id_pack
 LEFT JOIN Type_Pack AS tp ON tp.id_type_pack=p.id_type_pack
 LEFT JOIN Commands_Pack AS cp ON cp.id_command_pack=pc.id_command_pack
-GROUP BY p.id_pack;
+GROUP BY p.id_pack
+ORDER BY tp.type_name, p.pack_name;
+
+SELECT * FROM view_Pack_Animals;
 ```
 
 ![Заполнение таблиц для типа животных "Pack_Animals"](image/MySQL/2.png)
+
+```
+/*
+***********************************************************************
+Удалить записи о верблюдах и объединить таблицы лошадей и ослов.
+***********************************************************************
+*/
+
+DELETE FROM Pack_Animals WHERE id_type_pack = 2;
+
+SELECT * FROM view_Pack_Animals;
+
+```
+
+![Удалить записи о верблюдах и объединить таблицы лошадей и ослов](image/MySQL/3.png)
+
+
+```
+/*
+*********************************************************************************************************
+Создать новую таблицу для животных в возрасте от 1 до 3 лет и вычислить их возраст с точностью до месяца.
+*********************************************************************************************************
+*/
+
+DROP TABLE IF EXISTS Age_animals;
+
+CREATE TABLE Age_animals(
+	SELECT 
+		name, type, birthDate, commands, 
+		CONCAT(
+			TIMESTAMPDIFF(YEAR, birthDate, NOW()), ' years, ',
+			TIMESTAMPDIFF(MONTH, birthDate, NOW()) % 12, ' months')  AS age 
+    FROM view_Pack_Animals 
+		WHERE TIMESTAMPDIFF(YEAR, birthDate, NOW()) IN (1, 2, 3)
+    UNION
+    SELECT 
+		name, type, birthDate, commands, 
+		CONCAT(
+			TIMESTAMPDIFF(YEAR, birthDate, NOW()), ' years, ',
+			TIMESTAMPDIFF(MONTH, birthDate, NOW()) % 12, ' months')  AS age 
+  	FROM view_Pets 
+		WHERE TIMESTAMPDIFF(YEAR, birthDate, NOW()) IN (1, 2, 3)    
+);
+SELECT * FROM Age_animals ORDER BY type, name;
+```
+
+![Создать новую таблицу для животных в возрасте от 1 до 3 лет](image/MySQL/4.png)
+
+
+```
+/*
+*********************************************************************************************************
+Объединить все созданные таблицы в одну, сохраняя информацию о принадлежности к исходным таблицам.
+*********************************************************************************************************
+*/
+
+DROP VIEW IF EXISTS view_all_animals;
+
+ CREATE VIEW view_all_animals AS
+	SELECT * FROM view_Pack_Animals 
+    UNION ALL
+    SELECT * FROM view_Pets
+    ORDER BY name;
+
+SELECT * FROM view_all_animals;
+```
+
+![Объединить все созданные таблицы в одну](image/MySQL/5.png)

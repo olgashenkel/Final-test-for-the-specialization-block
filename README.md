@@ -68,7 +68,7 @@
 
 ![Лист "PackAnimals"](image/2.png)
 
-8. **ООП и Java**
+8. **ООП и Java**  ([ссылка на работу](https://github.com/olgashenkel/Final-test-for-the-specialization-block/blob/main/OOP_JAVA.md))
 
 - Создать иерархию классов в Java, который будет повторять диаграмму классов созданную в задаче 6 (Диаграмма классов).
 

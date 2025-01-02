@@ -1,6 +1,6 @@
 ### Объектно-ориентированное программирование
 
-8. **ООП и Java**
+8. **ООП и Java**  ([ссылка на работу](https://github.com/olgashenkel/Final-test-for-the-specialization-block/tree/main/pet_registry/src))
 
 - Создать иерархию классов в Java, который будет повторять диаграмму классов созданную в задаче 6 (Диаграмма классов).
 
